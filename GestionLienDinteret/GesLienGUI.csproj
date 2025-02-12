@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BAAA6D31-5877-4BBC-BDFA-C057858E486D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>GesLienGUI</RootNamespace>
+    <AssemblyName>GesLienGUI</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FrmConsultAvantage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmConsultAvantage.Designer.cs">
+      <DependentUpon>FrmConsultAvantage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmMenuAvantage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmMenuAvantage.Designer.cs">
+      <DependentUpon>FrmMenuAvantage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmModifAvantage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmModifAvantage.Designer.cs">
+      <DependentUpon>FrmModifAvantage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmSuppAvantage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmSuppAvantage.Designer.cs">
+      <DependentUpon>FrmSuppAvantage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GSBLienDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GSBLienDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="FrmAjoutAvantage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmAjoutAvantage.Designer.cs">
+      <DependentUpon>FrmAjoutAvantage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <EmbeddedResource Include="FrmConsultAvantage.resx">
+      <DependentUpon>FrmConsultAvantage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmMenuAvantage.resx">
+      <DependentUpon>FrmMenuAvantage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmModifAvantage.resx">
+      <DependentUpon>FrmModifAvantage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmSuppAvantage.resx">
+      <DependentUpon>FrmSuppAvantage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmAjoutAvantage.resx">
+      <DependentUpon>FrmAjoutAvantage.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="FrmAjoutBeneficiaire.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmAjoutBeneficiaire.Designer.cs">
+      <DependentUpon>FrmAjoutBeneficiaire.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmConsltBeneficiaire.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmConsltBeneficiaire.Designer.cs">
+      <DependentUpon>FrmConsltBeneficiaire.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmConsltBeneficiaireConventionPeriode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmConsltBeneficiaireConventionPeriode.Designer.cs">
+      <DependentUpon>FrmConsltBeneficiaireConventionPeriode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmConsltBeneficiaireParAvantagesAnnee.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmConsltBeneficiaireParAvantagesAnnee.Designer.cs">
+      <DependentUpon>FrmConsltBeneficiaireParAvantagesAnnee.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmConsltParProfessionBeneficiaire.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmConsltParProfessionBeneficiaire.Designer.cs">
+      <DependentUpon>FrmConsltParProfessionBeneficiaire.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmConsltParVilleBeneficiaire.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmConsltParVilleBeneficiaire.Designer.cs">
+      <DependentUpon>FrmConsltParVilleBeneficiaire.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmMenuBen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmMenuBen.Designer.cs">
+      <DependentUpon>FrmMenuBen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmModifBeneficiaire.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmModifBeneficiaire.Designer.cs">
+      <DependentUpon>FrmModifBeneficiaire.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmSuppBeneficiaire.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmSuppBeneficiaire.Designer.cs">
+      <DependentUpon>FrmSuppBeneficiaire.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="FrmAjoutBeneficiaire.resx">
+      <DependentUpon>FrmAjoutBeneficiaire.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmConsltBeneficiaire.resx">
+      <DependentUpon>FrmConsltBeneficiaire.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmConsltBeneficiaireConventionPeriode.resx">
+      <DependentUpon>FrmConsltBeneficiaireConventionPeriode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmConsltBeneficiaireParAvantagesAnnee.resx">
+      <DependentUpon>FrmConsltBeneficiaireParAvantagesAnnee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmConsltParProfessionBeneficiaire.resx">
+      <DependentUpon>FrmConsltParProfessionBeneficiaire.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmConsltParVilleBeneficiaire.resx">
+      <DependentUpon>FrmConsltParVilleBeneficiaire.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmMenuBen.resx">
+      <DependentUpon>FrmMenuBen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmModifBeneficiaire.resx">
+      <DependentUpon>FrmModifBeneficiaire.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmSuppBeneficiaire.resx">
+      <DependentUpon>FrmSuppBeneficiaire.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\AssemblyInfo %281%29.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="GSBLienDataSet.xsc">
+      <DependentUpon>GSBLienDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="GSBLienDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>GSBLienDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="GSBLienDataSet.xss">
+      <DependentUpon>GSBLienDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GesBLL\GesLienBLL.csproj">
+      <Project>{50d1cb2a-15e6-4c4d-9846-b2db7309f7a6}</Project>
+      <Name>GesLienBLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GesBO\GesLienBO.csproj">
+      <Project>{cf16ecc5-e95e-433f-8fe3-96d4ec330b56}</Project>
+      <Name>GesLienBO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GesDAL\GesLienDAL.csproj">
+      <Project>{43b845b7-c3bd-46a3-aca5-7c4fe952ffef}</Project>
+      <Name>GesLienDAL</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
