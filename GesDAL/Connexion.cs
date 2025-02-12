@@ -1,8 +1,7 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,41 +10,38 @@ namespace GesLienDAL
 {
     static public class Connexion
     {
-        static private SqlConnection objConnex;
+        static private MySqlConnection objConnex;
 
-        //le constructeur statique (appelé une seule fois)
-        // crée un objet insatance de la class SqlConnection
+        // Le constructeur statique (appelé une seule fois)
+        // crée un objet instance de la classe MySqlConnection
         static Connexion()
         {
-            objConnex = new SqlConnection();
+            objConnex = new MySqlConnection();
             objConnex.ConnectionString = ConfigurationManager.ConnectionStrings["GSBLien"].ConnectionString;
         }
-        // la méthode GetObjConnexion forunit l'objet instance de 
-        // la classe SqlConnection dan un état "connexion ouverte"
-        public static SqlConnection GetSqlConnection()
 
+        // La méthode GetSqlConnection fournit l'objet instance de 
+        // la classe MySqlConnection dans un état "connexion ouverte"
+        public static MySqlConnection GetMySqlConnection()
         {
-            // on ouvre la connexion si elle est fermée
+            // On ouvre la connexion si elle est fermée
             if (objConnex.State == System.Data.ConnectionState.Closed)
             {
                 objConnex.Open();
             }
-            // on retourne l'objet responsable de la connexion
+            // On retourne l'objet responsable de la connexion
             return objConnex;
         }
 
-        // la méthode CloseConnexion met l'objet instance de 
-        // la classe SqlConnection dans un état "connexion fermée"
+        // La méthode CloseConnexion met l'objet instance de 
+        // la classe MySqlConnection dans un état "connexion fermée"
         public static void CloseConnexion()
         {
-
-            // si la connexion est ouverte on la ferme
+            // Si la connexion est ouverte, on la ferme
             if (objConnex != null && objConnex.State != System.Data.ConnectionState.Closed)
             {
                 objConnex.Close();
             }
-
         }
-
     }
 }
