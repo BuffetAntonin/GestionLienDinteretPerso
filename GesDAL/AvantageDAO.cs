@@ -1,241 +1,199 @@
-﻿using GesLienDAL;
-using GesLienBO;
+﻿using GesLienBO;
+using GesLienDAL;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-
-namespace GesLienDAL
+/// <summary>
+/// Classe DAO pour gérer les opérations sur les avantages.
+/// </summary>
+public class AvantageDAO
 {
-    public class AvantageDAO
+    /// <summary>
+    /// Récupère la liste de tous les avantages.
+    /// </summary>
+    /// <returns>Liste des avantages</returns>
+    public static List<Avantage> GetAvantage()
     {
-        private static AvantageDAO uneInstance;
+        List<Avantage> lesAvantages = new List<Avantage>();
 
-        // cette méthode creé un objet de la classe LienDAOAvantage s'il n'existe pas déjà un
-        // puis retourne la réference a cet objet
-        public static AvantageDAO GetInstance()
+        try
         {
-            if (uneInstance == null)
+            using (MySqlConnection maConnexion = Connexion.GetMySqlConnection())
             {
-                uneInstance = new AvantageDAO();
-
-            }
-            return uneInstance;
-
-        }
-        //le constructeur par défaut est privé : il ne sera donc pas possible de créer un 
-        //objet a l'exterieur de la classe avec l'instruction new...
-        private AvantageDAO()
-        {
-
-        }
-
-        public List<Avantage> GetAvantage()
-        {
-            int id;
-            float montant;
-            DateTime DateDon;
-            string idBeneficiaire;
-            string idEmploye;
-            string idNature;
-
-
-            List<Avantage> lesAvantages = new List<Avantage>();
-            SqlConnection maConnexion;
-            maConnexion = Connexion.GetSqlConnection();
-            SqlCommand maCommand;
-
-            maCommand = new SqlCommand("", maConnexion);
-            maCommand.CommandType = CommandType.StoredProcedure;
-            maCommand.CommandText = "spGetLesAvantages";
-            SqlDataReader reader = maCommand.ExecuteReader();
-
-            while (reader.Read())
-            {
-                id = (int)reader["id"];
-                string lemontant = null;
-                if (reader["montant"] == DBNull.Value)
+                MySqlCommand maCommand = new MySqlCommand("CALL spGetLesAvantages", maConnexion);
+                using (MySqlDataReader reader = maCommand.ExecuteReader())
                 {
-                    montant = default(float);
-                }
-                else
-                {
-                    lemontant = reader["montant"].ToString();
+                    while (reader.Read())
+                    {
+                        int id = (int)reader["id"];
+                        float montant = reader["montant"] == DBNull.Value ? 0 : Convert.ToSingle(reader["montant"]);
+                        DateTime DateDon = reader["dateDon"] == DBNull.Value ? DateTime.MinValue : (DateTime)reader["dateDon"];
+                        string idBeneficiaire = reader["NomBeneficiaire"].ToString();
+                        string idEmploye = reader["LibelleNature"].ToString();
+                        string idNature = reader["NomEmploye"].ToString();
+
+                        Avantage unAvantage = new Avantage(id, montant, DateDon, new Beneficiaire(idBeneficiaire), new Employe(idEmploye), new Nature(idNature));
+                        lesAvantages.Add(unAvantage);
+                    }
                 }
 
-                if (reader["dateDon"] == DBNull.Value)
+                // Ancien code supprimé :
+                // Connexion.CloseConnexion();
+            }
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine("Erreur MySQL : " + e.Message);
+        }
+
+        return lesAvantages;
+    }
+
+    /// <summary>
+    /// Récupère un avantage spécifique en fonction de son ID.
+    /// </summary>
+    /// <param name="id">Identifiant de l'avantage</param>
+    /// <returns>Un objet Avantage</returns>
+    public static Avantage GetUnAvantage(int id)
+    {
+        Avantage unAvantage = null;
+
+        try
+        {
+            using (MySqlConnection maConnexion = Connexion.GetMySqlConnection())
+            {
+                using (MySqlCommand maCommand = new MySqlCommand("CALL spAvantageSltUn(@id)", maConnexion))
                 {
-                    DateDon = default(DateTime);
+                    maCommand.Parameters.AddWithValue("@id", id);
+                    using (MySqlDataReader reader = maCommand.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            float montant = reader["montant"] == DBNull.Value ? 0 : Convert.ToSingle(reader["montant"]);
+                            DateTime DateDon = reader["dateDon"] == DBNull.Value ? DateTime.MinValue : (DateTime)reader["dateDon"];
+                            string idBeneficiaire = reader["NomBeneficiaire"].ToString();
+                            string idEmploye = reader["LibelleNature"].ToString();
+                            string idNature = reader["NomEmploye"].ToString();
+
+                            unAvantage = new Avantage(id, montant, DateDon, new Beneficiaire(idBeneficiaire), new Employe(idEmploye), new Nature(idNature));
+                        }
+                    }
                 }
-                else
+
+                // Ancien code supprimé :
+                // Connexion.CloseConnexion();
+            }
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine("Erreur MySQL : " + e.Message);
+        }
+
+        return unAvantage;
+    }
+
+    /// <summary>
+    /// Ajoute un nouvel avantage à la base de données.
+    /// </summary>
+    /// <param name="unAvantage">L'avantage à ajouter</param>
+    /// <returns>Nombre de lignes affectées</returns>
+    public static int AjoutAvantage(Avantage unAvantage)
+    {
+        int nb = 0;
+
+        try
+        {
+            using (MySqlConnection maConnexion = Connexion.GetMySqlConnection())
+            {
+                using (MySqlCommand maCommand = new MySqlCommand("CALL spAvantageAjout(@montant, @dateDon, @idBeneficiaire, @idEmploye, @idNature)", maConnexion))
                 {
-                    DateDon = (DateTime)reader["dateDon"];
+                    maCommand.Parameters.AddWithValue("@montant", unAvantage.MontantDuDon);
+                    maCommand.Parameters.AddWithValue("@dateDon", unAvantage.DateDuDon);
+                    maCommand.Parameters.AddWithValue("@idBeneficiaire", unAvantage.UnBeneficiaire.Id);
+                    maCommand.Parameters.AddWithValue("@idEmploye", unAvantage.UnEmploye.Id);
+                    maCommand.Parameters.AddWithValue("@idNature", unAvantage.UneNature.Id);
+
+                    nb = maCommand.ExecuteNonQuery();
                 }
 
-                float.TryParse(lemontant, out montant);
-
-                idBeneficiaire = reader["NomBeneficiaire"].ToString();
-
-                idEmploye = reader["LibelleNature"].ToString();
-
-                idNature = reader["NomEmploye"].ToString();
-
-
-                Avantage unAvantage = new Avantage(id, montant, DateDon, new Beneficiaire(idBeneficiaire), new Employe(idEmploye), new Nature(idNature));
-                lesAvantages.Add(unAvantage);
-
-
+                // Ancien code supprimé :
+                // Connexion.CloseConnexion();
             }
-            reader.Close();
-
-            Connexion.CloseConnexion();
-
-            return lesAvantages;
-
-
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine("Erreur lors de l'ajout : " + e.Message);
         }
 
-        public Avantage GetUnAvantage(int idUnAvantage)
+        return nb;
+    }
+
+    /// <summary>
+    /// Supprime un avantage de la base de données.
+    /// </summary>
+    /// <param name="id">Identifiant de l'avantage</param>
+    /// <returns>Nombre de lignes affectées</returns>
+    public static int SupprAvantage(int id)
+    {
+        int nb = 0;
+
+        try
         {
-            //Declaration et création de la collection le Beneficiaire
-            Avantage unAvantage = null;
-            Beneficiaire unBeneficiaire ;
-            Employe unEmploye;
-            Nature uneNature;
-           
-            //Creation de l'objet commande
-            SqlCommand maCommand;
-            maCommand = new SqlCommand("", Connexion.GetSqlConnection());
-            //creation du data Reader
-            SqlDataReader monLecteur;
-            maCommand.CommandType = CommandType.StoredProcedure;
-            maCommand.CommandText = "spAvantageSltUn";
-            maCommand.Parameters.Add("id", System.Data.SqlDbType.Int);
-            maCommand.Parameters[0].Value = idUnAvantage;
-            monLecteur = maCommand.ExecuteReader();
-            while (monLecteur.Read())
+            using (MySqlConnection maConnexion = Connexion.GetMySqlConnection())
             {
-                int id = (int)monLecteur["id"];
+                using (MySqlCommand maCommand = new MySqlCommand("CALL spAvantageSupp(@id)", maConnexion))
+                {
+                    maCommand.Parameters.AddWithValue("@id", id);
+                    nb = maCommand.ExecuteNonQuery();
+                }
 
-                float montant ;
-                string lemontant = monLecteur["montant"].ToString();
-                float.TryParse(lemontant, out montant);
-                DateTime DateDon = (DateTime)monLecteur["DateDon"];
-                int idBeneficiaire =(int) monLecteur["idBeneficiaire"];
-                int idEmploye =(int) monLecteur["idEmploye"];
-                int idNature = (int)monLecteur["idNature"];
-
-
-                unAvantage = new Avantage(id, montant, DateDon, new Beneficiaire(idBeneficiaire), new Employe(idEmploye), new Nature(idNature));
-                unBeneficiaire = new Beneficiaire(idBeneficiaire);
-                unEmploye = new Employe(idEmploye);
-                uneNature = new Nature(idNature);
+                // Ancien code supprimé :
+                // Connexion.CloseConnexion();
             }
-            Connexion.CloseConnexion();
-            return unAvantage;
+        }
+        catch (MySqlException e)
+        {
+            Console.WriteLine("Erreur lors de la suppression : " + e.Message);
         }
 
-        public int AjoutAvantage(Avantage unAvantage)
+        return nb;
+    }
+
+    /// <summary>
+    /// Modifie un avantage existant dans la base de données.
+    /// </summary>
+    /// <param name="unAvantage">L'avantage modifié</param>
+    /// <returns>Nombre de lignes affectées</returns>
+    public static int ModifAvantage(Avantage unAvantage)
+    {
+        int nb = 0;
+
+        try
         {
-            SqlConnection maConnexion;
-            maConnexion = Connexion.GetSqlConnection();  
-            //Creation de l'objet commande
-            SqlCommand maCommand;
-            maCommand = new SqlCommand("", maConnexion);
-            //creation du data Reader
-            maCommand.CommandText = "spAvantageAjout";
-
-            maCommand.CommandType = CommandType.StoredProcedure;
-
-            maCommand.Parameters.Add("montant", System.Data.SqlDbType.Float);
-            maCommand.Parameters["montant"].Value = unAvantage.MontantDuDon;
-
-            maCommand.Parameters.Add("dateDon", System.Data.SqlDbType.DateTime);
-            maCommand.Parameters["dateDon"].Value = unAvantage.DateDuDon;
-
-            maCommand.Parameters.Add("idBeneficiaire", System.Data.SqlDbType.Int);
-            maCommand.Parameters["idBeneficiaire"].Value = unAvantage.UnBeneficiaire.Id;
-
-            maCommand.Parameters.Add("idEmploye", System.Data.SqlDbType.Int);
-            maCommand.Parameters["idEmploye"].Value = unAvantage.UnEmploye.Id;
-
-            maCommand.Parameters.Add("idNature", System.Data.SqlDbType.Int);
-            maCommand.Parameters["idNature"].Value = unAvantage.UneNature.Id;
-
-
-
-            int nb = maCommand.ExecuteNonQuery();
-            Connexion.CloseConnexion();
-            return nb;
-
-
-        }
-        public string SupprAvantage(int idAvantage)
-        {
-            string msg = "";
-            try
+            using (MySqlConnection maConnexion = Connexion.GetMySqlConnection())
             {
-                //Creation de l'objet commande
-                SqlCommand maCommand;
-                maCommand = new SqlCommand("", Connexion.GetSqlConnection());
-                //creation du data Reader
-                maCommand.CommandType = CommandType.StoredProcedure;
-                maCommand.CommandText = "spAvantageSupp";
-                maCommand.Parameters.Add("id", System.Data.SqlDbType.Int);
-                maCommand.Parameters[0].Value = idAvantage;
+                using (MySqlCommand maCommand = new MySqlCommand("CALL spAvantageMdf(@id, @montant, @dateDon, @idBeneficiaire, @idEmploye, @idNature)", maConnexion))
+                {
+                    maCommand.Parameters.AddWithValue("@id", unAvantage.Id);
+                    maCommand.Parameters.AddWithValue("@montant", unAvantage.MontantDuDon);
+                    maCommand.Parameters.AddWithValue("@dateDon", unAvantage.DateDuDon);
+                    maCommand.Parameters.AddWithValue("@idBeneficiaire", unAvantage.UnBeneficiaire.Id);
+                    maCommand.Parameters.AddWithValue("@idEmploye", unAvantage.UnEmploye.Id);
+                    maCommand.Parameters.AddWithValue("@idNature", unAvantage.UneNature.Id);
 
-                
+                    nb = maCommand.ExecuteNonQuery();
+                }
 
-                int nb = maCommand.ExecuteNonQuery();
-                maCommand.Connection.Close();
+                // Ancien code supprimé :
+                // Connexion.CloseConnexion();
             }
-            catch (SqlException e)
-            {
-                msg = e.Message;
-            }
-
-            return msg;
         }
-
-        public int ModifAvantage(Avantage unAvantage)
+        catch (MySqlException e)
         {
-            //Creation de l'objet commande
-            SqlCommand maCommand;
-            // declare la connection 
-            maCommand = new SqlCommand("", Connexion.GetSqlConnection());
-            maCommand.CommandType = CommandType.StoredProcedure;
-            // appelle de la procedure avec les parametre
-            maCommand.CommandText = "spAvantageMdf";
-
-            // La procédure comporte des paramètres : pour le prénom
-          
-            maCommand.Parameters.Add("id", System.Data.SqlDbType.Int);
-            maCommand.Parameters["id"].Value = unAvantage.Id;
-
-
-            maCommand.Parameters.Add("montant", System.Data.SqlDbType.Float);
-            maCommand.Parameters["montant"].Value = unAvantage.MontantDuDon;
-
-            maCommand.Parameters.Add("dateDon", System.Data.SqlDbType.DateTime);
-            maCommand.Parameters["dateDon"].Value = unAvantage.DateDuDon;
-
-            maCommand.Parameters.Add("idBeneficiaire", System.Data.SqlDbType.Int);
-            maCommand.Parameters["idBeneficiaire"].Value = unAvantage.UnBeneficiaire.Id;
-
-            maCommand.Parameters.Add("idEmploye", System.Data.SqlDbType.Int);
-            maCommand.Parameters["idEmploye"].Value = unAvantage.UnEmploye.Id;
-
-            maCommand.Parameters.Add("idNature", System.Data.SqlDbType.Int);
-            maCommand.Parameters["idNature"].Value = unAvantage.UneNature.Id;
-            //  faire le requette
-            int nb = maCommand.ExecuteNonQuery();
-            maCommand.Connection.Close();
-            return nb;
+            Console.WriteLine("Erreur lors de la modification : " + e.Message);
         }
 
+        return nb;
     }
 }
