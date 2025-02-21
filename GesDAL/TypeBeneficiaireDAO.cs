@@ -1,4 +1,5 @@
 ﻿using GesLienBO;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -25,31 +26,38 @@ namespace GesLienDAL
 
         public List<TypeBeneficiaire> GetTypeBeneficiaires()
         {
-            //Declaration et création de la collection le client
-            List<TypeBeneficiaire> lesTypeBeneficiaire = new List<TypeBeneficiaire>();
-            TypeBeneficiaire unTypeBeneficiaire;
-            //Creation de l'objet commande
-            SqlCommand maCommand;
-            maCommand = new SqlCommand("", Connexion.GetSqlConnection());
-            //creation du data Reader
-            SqlDataReader monLecteur;
-            maCommand.CommandType = CommandType.StoredProcedure;
-            maCommand.CommandText = "spTypeBeneficiaireSlt";
+            List<TypeBeneficiaire> lesTypeBeneficiaires = new List<TypeBeneficiaire>();
 
-            monLecteur = maCommand.ExecuteReader();
-            while (monLecteur.Read())
+            try
             {
-                int id;
-                int.TryParse(monLecteur["id"].ToString(), out id);
-                string libelle = monLecteur["libelle"].ToString();
+                using (MySqlConnection maConnexion = Connexion.GetMySqlConnection())
+                {
+                    using (MySqlCommand maCommand = new MySqlCommand("spTypeBeneficiaireSlt", maConnexion))
+                    {
+                        maCommand.CommandType = CommandType.StoredProcedure;
 
-                unTypeBeneficiaire = new TypeBeneficiaire(id, libelle);
-                lesTypeBeneficiaire.Add(unTypeBeneficiaire);
+                        using (MySqlDataReader monLecteur = maCommand.ExecuteReader())
+                        {
+                            while (monLecteur.Read())
+                            {
+                                int id = monLecteur.GetInt32("id");
+                                string libelle = monLecteur.IsDBNull(monLecteur.GetOrdinal("libelle")) ? string.Empty : monLecteur.GetString("libelle");
+
+                                TypeBeneficiaire unTypeBeneficiaire = new TypeBeneficiaire(id, libelle);
+                                lesTypeBeneficiaires.Add(unTypeBeneficiaire);
+                            }
+                        }
+                    }
+                }
             }
-            Connexion.CloseConnexion();
+            catch (MySqlException e)
+            {
+                Console.WriteLine("Erreur MySQL : " + e.Message);
+            }
 
-            return lesTypeBeneficiaire;
+            return lesTypeBeneficiaires;
         }
+
 
     }
 }

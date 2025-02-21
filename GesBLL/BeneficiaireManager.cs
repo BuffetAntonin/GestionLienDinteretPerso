@@ -305,7 +305,7 @@ namespace GesLienBLL
         public string SupprBeneficiaire(int id)
         {
             // il appelait la méthode de suppression une bénéficiaire dans la base sinon retourne un message d'erreur.
-            string msg = BeneficiaireDAO.GetInstance().supprBeneficiaire(id);
+            string msg = BeneficiaireDAO.GetInstance().SupprBeneficiaire(id);
             return msg;
         }
         /// <summary>

@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 
 namespace GesLienDAL
 {
@@ -34,42 +35,37 @@ namespace GesLienDAL
 
         public List<Nature> GetNature()
         {
-            int id;
-            string libelle;
-
-
-
             List<Nature> lesNatures = new List<Nature>();
-            SqlConnection maConnexion;
-            maConnexion = Connexion.GetSqlConnection();
-            SqlCommand maCommand;
 
-            maCommand = new SqlCommand("", maConnexion);
-            maCommand.CommandText = "spNatureSlt";
-
-            SqlDataReader reader = maCommand.ExecuteReader();
-
-            while (reader.Read())
+            try
             {
-                id = (int)reader["id"];
-
-
-                if (reader["libelle"] == DBNull.Value)
+                using (MySqlConnection maConnexion = Connexion.GetMySqlConnection())
                 {
-                    libelle = default(string);
+                    using (MySqlCommand maCommand = new MySqlCommand("spNatureSlt", maConnexion))
+                    {
+                        maCommand.CommandType = CommandType.StoredProcedure;
+
+                        using (MySqlDataReader reader = maCommand.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int id = reader.GetInt32("id");
+                                string libelle = reader.IsDBNull(reader.GetOrdinal("libelle")) ? string.Empty : reader.GetString("libelle");
+
+                                Nature uneNature = new Nature(id, libelle);
+                                lesNatures.Add(uneNature);
+                            }
+                        }
+                    }
                 }
-                else
-                {
-                    libelle = reader["libelle"].ToString();
-                }
-                Nature uneNature = new Nature(id, libelle);
-                lesNatures.Add(uneNature);
             }
-            reader.Close();
-
-            Connexion.CloseConnexion();
+            catch (MySqlException e)
+            {
+                Console.WriteLine("Erreur MySQL : " + e.Message);
+            }
 
             return lesNatures;
         }
+
     }
 }

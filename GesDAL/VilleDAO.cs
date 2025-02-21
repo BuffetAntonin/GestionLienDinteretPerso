@@ -1,4 +1,5 @@
 ﻿using GesLienBO;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -25,33 +26,39 @@ namespace GesLienDAL
 
         public List<Ville> GetVilles()
         {
-            //Declaration et création de la collection le client
-            List<Ville> lesVille = new List<Ville>();
-            Ville uneVille;
-            //Creation de l'objet commande
-            SqlCommand maCommand;
-            maCommand = new SqlCommand("", Connexion.GetSqlConnection());
-            //creation du data Reader
-            SqlDataReader monLecteur;
-            maCommand.CommandType = CommandType.StoredProcedure;
-            maCommand.CommandText = "spVilleSlt";
+            List<Ville> lesVilles = new List<Ville>();
 
-            monLecteur = maCommand.ExecuteReader();
-            while (monLecteur.Read())
+            try
             {
-                int id;
-                int.TryParse(monLecteur["numInsee"].ToString(), out id);
-                string libelle = monLecteur["nomVille"].ToString();
-                int codePostal;
-                int.TryParse(monLecteur["codePostal"].ToString(), out codePostal);
+                using (MySqlConnection maConnexion = Connexion.GetMySqlConnection())
+                {
+                    using (MySqlCommand maCommand = new MySqlCommand("spVilleSlt", maConnexion))
+                    {
+                        maCommand.CommandType = CommandType.StoredProcedure;
 
-                uneVille = new Ville(id, libelle, codePostal);
-                lesVille.Add(uneVille);
+                        using (MySqlDataReader monLecteur = maCommand.ExecuteReader())
+                        {
+                            while (monLecteur.Read())
+                            {
+                                int id = monLecteur.GetInt32("numInsee");
+                                string libelle = monLecteur.IsDBNull(monLecteur.GetOrdinal("nomVille")) ? string.Empty : monLecteur.GetString("nomVille");
+                                int codePostal = monLecteur.GetInt32("codePostal");
+
+                                Ville uneVille = new Ville(id, libelle, codePostal);
+                                lesVilles.Add(uneVille);
+                            }
+                        }
+                    }
+                }
             }
-            Connexion.CloseConnexion();
+            catch (MySqlException e)
+            {
+                Console.WriteLine("Erreur MySQL : " + e.Message);
+            }
 
-            return lesVille;
+            return lesVilles;
         }
+
 
     }
 }

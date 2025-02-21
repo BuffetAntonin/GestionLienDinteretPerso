@@ -1,4 +1,5 @@
 ﻿using GesLienBO;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -25,31 +26,38 @@ namespace GesLienDAL
 
         public List<Profession> GetProfessions()
         {
-            //Declaration et création de la collection le client
-            List<Profession> LesProfessions = new List<Profession>();
-            Profession uneProfesion;
-            //Creation de l'objet commande
-            SqlCommand maCommand;
-            maCommand = new SqlCommand("", Connexion.GetSqlConnection());
-            //creation du data Reader
-            SqlDataReader monLecteur;
-            maCommand.CommandType = CommandType.StoredProcedure;
-            maCommand.CommandText = "spProfessionSlt";
+            List<Profession> lesProfessions = new List<Profession>();
 
-            monLecteur = maCommand.ExecuteReader();
-            while (monLecteur.Read())
+            try
             {
-                int id;
-                int.TryParse(monLecteur["id"].ToString(), out id);
-                string libelle = monLecteur["libelle"].ToString();
+                using (MySqlConnection maConnexion = Connexion.GetMySqlConnection())
+                {
+                    using (MySqlCommand maCommand = new MySqlCommand("spProfessionSlt", maConnexion))
+                    {
+                        maCommand.CommandType = CommandType.StoredProcedure;
 
-                uneProfesion = new Profession(id, libelle);
-                LesProfessions.Add(uneProfesion);
+                        using (MySqlDataReader monLecteur = maCommand.ExecuteReader())
+                        {
+                            while (monLecteur.Read())
+                            {
+                                int id = monLecteur.GetInt32("id");
+                                string libelle = monLecteur.IsDBNull(monLecteur.GetOrdinal("libelle")) ? string.Empty : monLecteur.GetString("libelle");
+
+                                Profession uneProfession = new Profession(id, libelle);
+                                lesProfessions.Add(uneProfession);
+                            }
+                        }
+                    }
+                }
             }
-            Connexion.CloseConnexion();
+            catch (MySqlException e)
+            {
+                Console.WriteLine("Erreur MySQL : " + e.Message);
+            }
 
-            return LesProfessions;
+            return lesProfessions;
         }
+
 
     }
 }

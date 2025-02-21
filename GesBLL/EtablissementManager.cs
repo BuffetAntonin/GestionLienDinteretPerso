@@ -24,7 +24,7 @@ namespace GesLienBLL
 
         public List<Etatblissement> GetEtatblissements()
         {
-            return EtablissementDAO.GetInstance().GetEtatblissements();
+            return EtablissementDAO.GetInstance().GetEtablissements();
         }
     }
 }

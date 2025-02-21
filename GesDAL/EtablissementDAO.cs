@@ -1,4 +1,5 @@
 ﻿using GesLienBO;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,33 +24,40 @@ namespace GesLienDAL
         }
         private EtablissementDAO() { }
 
-        public List<Etatblissement> GetEtatblissements()
+        public List<Etatblissement> GetEtablissements()
         {
-            //Declaration et création de la collection le client
-            List<Etatblissement> lesEtatblissements = new List<Etatblissement>();
-            Etatblissement uneEtablissement;
-            //Creation de l'objet commande
-            SqlCommand maCommand;
-            maCommand = new SqlCommand("", Connexion.GetSqlConnection());
-            //creation du data Reader
-            SqlDataReader monLecteur;
-            maCommand.CommandType = CommandType.StoredProcedure;
-            maCommand.CommandText = "spEtabliessemntSlt";
+            List<Etatblissement> lesEtablissements = new List<Etatblissement>();
 
-            monLecteur = maCommand.ExecuteReader();
-            while (monLecteur.Read())
+            try
             {
-                int id;
-                int.TryParse(monLecteur["id"].ToString(), out id);
-                string libelle = monLecteur["nomEtablissement"].ToString();
+                using (MySqlConnection maConnexion = Connexion.GetMySqlConnection())
+                {
+                    using (MySqlCommand maCommand = new MySqlCommand("spEtablissementSlt", maConnexion))
+                    {
+                        maCommand.CommandType = CommandType.StoredProcedure;
 
-                uneEtablissement = new Etatblissement(id, libelle);
-                lesEtatblissements.Add(uneEtablissement);
+                        using (MySqlDataReader monLecteur = maCommand.ExecuteReader())
+                        {
+                            while (monLecteur.Read())
+                            {
+                                int id = monLecteur.GetInt32("id");
+                                string libelle = monLecteur.GetString("nomEtablissement");
+
+                                Etatblissement unEtablissement = new Etatblissement(id, libelle);
+                                lesEtablissements.Add(unEtablissement);
+                            }
+                        }
+                    }
+                }
             }
-            Connexion.CloseConnexion();
+            catch (MySqlException e)
+            {
+                Console.WriteLine("Erreur MySQL : " + e.Message);
+            }
 
-            return lesEtatblissements;
+            return lesEtablissements;
         }
+
 
     }
 }
