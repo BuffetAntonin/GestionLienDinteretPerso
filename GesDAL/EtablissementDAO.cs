@@ -41,7 +41,7 @@ namespace GesLienDAL
                             while (monLecteur.Read())
                             {
                                 int id = monLecteur.GetInt32("id");
-                                string libelle = monLecteur.GetString("nomEtablissement");
+                                string libelle = monLecteur.GetString("libelle");
 
                                 Etatblissement unEtablissement = new Etatblissement(id, libelle);
                                 lesEtablissements.Add(unEtablissement);

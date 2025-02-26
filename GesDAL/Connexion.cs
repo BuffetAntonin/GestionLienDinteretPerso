@@ -22,7 +22,7 @@ namespace GesLienDAL
 
         // La méthode GetSqlConnection fournit l'objet instance de 
         // la classe MySqlConnection dans un état "connexion ouverte"
-        public static MySqlConnection GetMySqlConnection()
+        /*public static MySqlConnection GetMySqlConnection()
         {
             // On ouvre la connexion si elle est fermée
             if (objConnex.State == System.Data.ConnectionState.Closed)
@@ -31,8 +31,14 @@ namespace GesLienDAL
             }
             // On retourne l'objet responsable de la connexion
             return objConnex;
+        }*/
+        public static MySqlConnection GetMySqlConnection()
+        {
+            string connString = ConfigurationManager.ConnectionStrings["GSBLien"].ConnectionString;
+            MySqlConnection conn = new MySqlConnection(connString);
+            conn.Open();  // Toujours ouvrir une nouvelle connexion
+            return conn;
         }
-
         // La méthode CloseConnexion met l'objet instance de 
         // la classe MySqlConnection dans un état "connexion fermée"
         public static void CloseConnexion()

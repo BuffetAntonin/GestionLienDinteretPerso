@@ -486,7 +486,7 @@ namespace GesLienDAL
                 maCommand.CommandText = "spBeneficiaireSltUn";
 
                 // Ajout du paramètre d'entrée
-                maCommand.Parameters.AddWithValue("@id", idUnBeneficiaire);
+                maCommand.Parameters.AddWithValue("idBeneficiaire", idUnBeneficiaire);
 
                 // Exécution de la requête
                 MySqlDataReader monLecteur = maCommand.ExecuteReader();
@@ -501,7 +501,7 @@ namespace GesLienDAL
 
                     // Vérification des valeurs NULL dans la base de données
                     numRPPS = monLecteur["numRPPS"] != DBNull.Value ? Convert.ToInt32(monLecteur["numRPPS"]) : 0;
-                    idEtablissement = monLecteur["idEtatblissement"] != DBNull.Value ? Convert.ToInt32(monLecteur["idEtatblissement"]) : 0;
+                    idEtablissement = monLecteur["idEtablissement"] != DBNull.Value ? Convert.ToInt32(monLecteur["idEtablissement"]) : 0;
                     idProfession = monLecteur["idProfession"] != DBNull.Value ? Convert.ToInt32(monLecteur["idProfession"]) : 0;
 
                     int idTypeBeneficiaire = Convert.ToInt32(monLecteur["idtypeBeneficiaire"]);
